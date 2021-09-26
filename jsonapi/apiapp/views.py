@@ -8,6 +8,15 @@ from django.views.decorators.cache import never_cache
 
 # userlist method to view all users at once with options as get and post
 
+@api_view(['GET'])
+@never_cache
+def get_all_data(request):
+    if request.method == 'GET':    
+        data = blogData.objects.all()
+        serializer = blogDataSeriallizer(data,many = True)
+        return Response(serializer.data)
+
+
 
 @api_view(['GET'])
 @never_cache
@@ -28,3 +37,11 @@ def post_data(request):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
+
+@api_view(['DELETE', 'GET'])
+@never_cache
+def delete_data(request,id):
+    data = blogData.objects.get(pk=id)
+    if request.method == 'DELETE' or request.method == 'GET':
+        data.delete()
+        return Response(status = status.HTTP_204_NO_CONTENT)
